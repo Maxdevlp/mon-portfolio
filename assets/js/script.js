@@ -178,7 +178,74 @@ function revealOnScroll() {
     }
   });
 }
+function injectStyles() {
+  const style = document.createElement('style');
+  style.textContent = `
+    /* Cache le curseur natif */
+    * { cursor: none !important; }
 
+    /* Canvas des braises — derrière tout, fixe */
+    #ember-canvas {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.6;
+    }
+
+    /* Anneau du curseur */
+    #cursor-ring {
+      position: fixed;
+      top: -18px; left: -18px;
+      width: 36px; height: 36px;
+      border: 1.5px solid var(--accent-color);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+      transition: width 0.2s ease, height 0.2s ease,
+                  top 0.2s ease, left 0.2s ease,
+                  border-color 0.2s ease;
+      mix-blend-mode: difference;
+    }
+    #cursor-ring.cursor-hover {
+      top: -28px; left: -28px;
+      width: 56px; height: 56px;
+      border-color: var(--accent-light);
+    }
+
+    /* Point central du curseur */
+    #cursor-dot {
+      position: fixed;
+      top: -3px; left: -3px;
+      width: 6px; height: 6px;
+      background: var(--accent-light);
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 99999;
+    }
+
+    /* Barre de compétences : supprime l'overflow:hidden pour les segments */
+    .skill-bar { overflow: visible !important; }
+  `;
+  document.head.appendChild(style);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   DÉMARRAGE — on lance tout proprement
+═══════════════════════════════════════════════════════════════ */
+document.addEventListener('DOMContentLoaded', () => {
+  injectStyles();
+  initEmbers();
+  initMapBackground();
+  initRunicBars();
+
+  // Curseur et typewriter seulement sur desktop
+  if (window.innerWidth > 768) {
+    initCursor();
+    initTypewriter();
+  }
+});
 /* ═══════════════════════════════════════════════════════════════
    5. FORMULAIRE DE CONTACT — validation
    ══════════════════════════════════════════════════════════════
